@@ -3,13 +3,10 @@ import { useCallback, useMemo, useState } from "react";
 import InputSection from "./InputSection.tsx";
 import { ToWords } from "to-words";
 import History from "./History.tsx";
-import { HistoryRow } from "./types.ts";
+import { HistoryRow } from "./types/types.ts";
+import ParamInput from "./ParamInput.tsx";
+import { availableLocales } from "./const.ts";
 
-const availableLocales = [
-  ["English", "en-US"],
-  ["French", "fr-FR"],
-  ["Korean", "ko-KR"],
-];
 let questionNumber = 1;
 
 function App() {
@@ -25,46 +22,30 @@ function App() {
   const numToGuess = getRandomIntBetween(minVal, maxVal);
 
   const toWords = useMemo(() => new ToWords({ localeCode: locale }), [locale]);
-  const expectedAnswer = toWords.convert(numToGuess);
+  const expectedAnswer = toWords.convert(numToGuess).toLowerCase();
 
   const checkAnswer = useCallback(
-    (answer: string) => {
-      const isCorrect = answer === expectedAnswer.toLowerCase();
-      setHistory([
-        ...history,
-        { questionNumber, answer, expectedAnswer, isCorrect },
-      ]);
-      questionNumber++;
-      return isCorrect;
+    (answer: string, saveHistory = true) => {
+      if (saveHistory) {
+        setHistory([...history, { questionNumber, answer, expectedAnswer }]);
+        questionNumber++;
+      }
+      return expectedAnswer;
     },
     [expectedAnswer, history],
   );
 
   return (
-    <div className="h-screen flex-col">
-      <div className="flex flex-row justify-center gap-x-5">
-        <p>Random number between</p>
-        <input
-          type="number"
-          value={minVal}
-          onChange={(val) => setMinVal(parseInt(val.target.value))}
-          className="border-2 rounded-md border-gray-200 w-30 text-center"
-        />
-        <input
-          type="number"
-          value={maxVal}
-          onChange={(val) => setMaxVal(parseInt(val.target.value))}
-          className="border-2 rounded-md border-gray-200 w-30 text-center"
-        />
-        <select onChange={(e) => setLocale(e.target.value)}>
-          {availableLocales.map(([localeName, localeId]) => (
-            <option key={localeId} value={localeId}>
-              {localeName}
-            </option>
-          ))}
-        </select>
-      </div>
+    <div className="h-screen w-full flex-col">
+      <ParamInput
+        minVal={minVal}
+        maxVal={maxVal}
+        setMinVal={setMinVal}
+        setMaxVal={setMaxVal}
+        setLocale={setLocale}
+      />
       <InputSection
+        key={locale}
         checkAnswer={checkAnswer}
         guessNumber={numToGuess.toString()}
       />

@@ -1,19 +1,21 @@
-import { HistoryRow } from "./types.ts";
+import { HistoryProps } from "./types/types.ts";
+import DiffElement from "./DiffElement.tsx";
+import { useEffect, useRef } from "react";
 
-type HistoryProps = {
-  history: HistoryRow[];
-};
 const History = ({ history }: HistoryProps) => {
+  const endOfListRef = useRef<null | HTMLDivElement>(null);
+  useEffect(() => {
+    endOfListRef.current?.scrollIntoView({ behavior: "smooth" });
+  });
   return (
     <div
-      style={{ height: "70dvh" }}
+      style={{ height: "50svh" }}
       className="flex flex-col gap-y-5 my-20 overflow-y-scroll"
     >
-      {history.map((item) => (
-        <p key={item.questionNumber}>
-          {item.answer} - {item.expectedAnswer} - {item.isCorrect.toString()}
-        </p>
-      ))}
+      {history.map((historyItem) => {
+        return <DiffElement historyItem={historyItem} />;
+      })}
+      <div ref={endOfListRef} />
     </div>
   );
 };
