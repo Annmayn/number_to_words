@@ -31,7 +31,12 @@ const InputSection = ({ guessNumber, checkAnswer }: InputSectionProps) => {
           onKeyDown={handleKeyDown}
         />
         <div className="flex flex-row gap-x-5">
-          <button className="w-24 border border-white!" onClick={() => validateAnswer(false)}>Check</button>
+          <button
+            className="w-24 border border-white!"
+            onClick={() => validateAnswer(false)}
+          >
+            Check
+          </button>
           <button
             className="w-24 bg-red-500!"
             onClick={() => validateAnswer(!showingAnswer)}
